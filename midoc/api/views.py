@@ -59,7 +59,6 @@ class PatientRegisterView(APIView):
     #     return Response(response_msg)
 
 
-
 # clinic check
 class DoctorListView(APIView):
     serializer_class = DoctorSerializer
@@ -67,7 +66,8 @@ class DoctorListView(APIView):
     def get(self, request, format=None):
         doctor = Doctor.objects.all()
         serializer = DoctorSerializer(doctor, many=True)
-        return Response(serializer.data)
+        clinics = {"asesores": serializer.data}
+        return Response(clinics)
 
 
 # check
