@@ -42,12 +42,21 @@ class PatientRegisterView(APIView):
 
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        response_msg = {'details': "El paciente fue registrato satisfactoriamente",
-                        "status": status.HTTP_200_OK}
-        return Response(response_msg)
+
+
+    # def post(self, request, format=None):
+    #     serializer = self.serializer_class(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #
+    #     response_msg = {'details': "El paciente fue registrato satisfactoriamente",
+    #                     "status": status.HTTP_200_OK}
+    #     return Response(response_msg)
 
 
 
