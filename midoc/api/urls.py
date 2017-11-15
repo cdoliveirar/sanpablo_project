@@ -30,13 +30,15 @@ from .views import (PatientRegisterView,
                     #MedicalHistoryRegister,
                     MedicalHistoryListByEmergDoctor,
                     MedicalHistoryUpdating,
+                    DoctorListView,
                     )
 
 urlpatterns = [
     # sanpablo
     url(r'^patientregister/$', PatientRegisterView.as_view(), name='patient_register'),
+    url(r'^doctor_list/$', DoctorListView.as_view(), name='patient_register'),
 
-    #
+
 
     url(r'^doctorlogin/$', DoctorLogin.as_view(), name='doctorlogin'),
     url(r'^headquarters/(?P<enterprise_id>\d+)/$', EnterpriseHeadquarters.as_view(), name='headquarters'),

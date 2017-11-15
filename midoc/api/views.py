@@ -31,7 +31,7 @@ from .models import (Doctor,
                     )
 
 
-#flow clinic
+# clinic check
 class PatientRegisterView(APIView):
     serializer_class = PatientSerializer
 
@@ -58,6 +58,16 @@ class PatientRegisterView(APIView):
     #                     "status": status.HTTP_200_OK}
     #     return Response(response_msg)
 
+
+
+# clinic check
+class DoctorListView(APIView):
+    serializer_class = DoctorSerializer
+
+    def get(self, request, format=None):
+        doctor = Doctor.objects.all()
+        serializer = DoctorSerializer(doctor, many=True)
+        return Response(serializer.data)
 
 
 # check
