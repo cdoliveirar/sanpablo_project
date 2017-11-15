@@ -31,6 +31,25 @@ from .models import (Doctor,
                     )
 
 
+#flow clinic
+class PatientRegisterView(APIView):
+    serializer_class = PatientSerializer
+
+    def get(self, format=None):
+        serializer = self.serializer_class(Patient.objects.all(), many=True)
+        print(serializer.data)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        response_msg = {'details': "El paciente fue registrato satisfactoriamente",
+                        "status": status.HTTP_200_OK}
+        return Response(response_msg)
+
+
 
 # check
 class DoctorLogin(APIView):
@@ -393,47 +412,47 @@ class PatientView(APIView):
 
 
 # check
-class PatientRegisterView(APIView):
-    serializer_class = PatientSerializer
-
-    def get(self, format=None):
-        serializer = self.serializer_class(Patient.objects.all(), many=True)
-        return Response(serializer.data)
-
-    #@transaction.atomic()
-    def post(self, request, format=None):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        vd = serializer.validated_data
-        print(vd.get("dni"))
-        try:
-            if not Patient.objects.filter(dni__exact=vd.get("dni")).exists():
-                print("object to save: {}".format(vd))
-                # save and get the recent id
-                patient = serializer.save()
-                print(patient.dni)
-                # patient.pk get the recent id
-
-                p = {"id": patient.pk, "name": patient.name, "email": patient.email,
-                     "password": patient.password, "dni": patient.dni, "picture_url": patient.picture_url,
-                     "enterprise_enabled": patient.is_enterprise_enabled, "blood_type": patient.blood_type,
-                     "allergic_reaction": patient.allergic_reaction, "token_sinch": patient.token_sinch,
-                     "size": patient.size, "is_enterprise_enabled": patient.is_enterprise_enabled
-                     }
-                print(p)
-                # return HttpResponse(json.dumps(p, cls=DjangoJSONEncoder), content_type='application/json')
-                return Response(p)
-
-            else:
-                print(">>> Usuario ya se encuentra registrado")
-                response_msg = {'details': 'Este Usuario ya esta registrado', 'status': status.HTTP_409_CONFLICT}
-                return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
-
-        except Exception as inst:
-            print(">>> create failure")
-            print(inst)
-            response_msg = [{'create': 'failure'}]
-            return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+# class PatientRegisterView(APIView):
+#     serializer_class = PatientSerializer
+#
+#     def get(self, format=None):
+#         serializer = self.serializer_class(Patient.objects.all(), many=True)
+#         return Response(serializer.data)
+#
+#     #@transaction.atomic()
+#     def post(self, request, format=None):
+#         serializer = self.serializer_class(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         vd = serializer.validated_data
+#         print(vd.get("dni"))
+#         try:
+#             if not Patient.objects.filter(dni__exact=vd.get("dni")).exists():
+#                 print("object to save: {}".format(vd))
+#                 # save and get the recent id
+#                 patient = serializer.save()
+#                 print(patient.dni)
+#                 # patient.pk get the recent id
+#
+#                 p = {"id": patient.pk, "name": patient.name, "email": patient.email,
+#                      "password": patient.password, "dni": patient.dni, "picture_url": patient.picture_url,
+#                      "enterprise_enabled": patient.is_enterprise_enabled, "blood_type": patient.blood_type,
+#                      "allergic_reaction": patient.allergic_reaction, "token_sinch": patient.token_sinch,
+#                      "size": patient.size, "is_enterprise_enabled": patient.is_enterprise_enabled
+#                      }
+#                 print(p)
+#                 # return HttpResponse(json.dumps(p, cls=DjangoJSONEncoder), content_type='application/json')
+#                 return Response(p)
+#
+#             else:
+#                 print(">>> Usuario ya se encuentra registrado")
+#                 response_msg = {'details': 'Este Usuario ya esta registrado', 'status': status.HTTP_409_CONFLICT}
+#                 return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+#
+#         except Exception as inst:
+#             print(">>> create failure")
+#             print(inst)
+#             response_msg = [{'create': 'failure'}]
+#             return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
 
 
 # ckeck
