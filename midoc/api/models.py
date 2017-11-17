@@ -239,3 +239,21 @@ class ArtifactMeasurement(models.Model):
     class Meta:
         managed = False
         db_table = 'artifact_measurement'
+
+
+
+class Competition(models.Model):
+    patient = models.ForeignKey('Patient', models.DO_NOTHING, blank=True, null=True)
+    doctor = models.ForeignKey('Doctor', models.DO_NOTHING, blank=True, null=True)
+    qualification = models.IntegerField(blank=True, null=True)
+    qualification_feedback = models.CharField(max_length=100, blank=True, null=True)
+    recommendation = models.IntegerField(blank=True, null=True)
+    recommendation_feedback = models.CharField(max_length=100, blank=True, null=True)
+    created_date = models.DateTimeField(blank=True, null=True)
+    created_by = models.TextField(blank=True, null=True)
+    last_modified_date = models.DateTimeField(blank=True, null=True)
+    last_modified_by = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'competition'

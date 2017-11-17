@@ -16,7 +16,8 @@ from .serializers import (DoctorSerializer,
                         PatientVerifySerializer,
                         ArtifactMeasurementSerializer,
                         #PatientHistorySerializer
-                        PatientUpdatingSerializer
+                        PatientUpdatingSerializer,
+                        CompetitionSerializer,
                           )
 from .models import (Doctor,
                     Location,
@@ -28,6 +29,7 @@ from .models import (Doctor,
                     MedicalHistoryMedia,
                     Appointment,
                     ArtifactMeasurement,
+                    Competition,
                     )
 
 
@@ -70,7 +72,50 @@ class DoctorListView(APIView):
         return Response(clinics)
 
 
-# check
+# clinic check
+class DoctorUpdateAttention(APIView):
+    """
+    Retrieve, update a Doctor instance.
+    """
+
+    def get_object(self, pk):
+        try:
+            return Doctor.objects.get(pk=pk)
+        except Doctor.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        doctor = self.get_object(pk)
+        serializer = DoctorSerializer(doctor)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        doctor = self.get_object(pk)
+        serializer = DoctorSerializer(doctor, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# clinic check
+class CompetitionView(APIView):
+    serializer_class = CompetitionSerializer
+
+    def get(self, request, format=None):
+        serializer = self.serializer_class(Competition.objects.all(),many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message":"403 Forbidden"}, status=status.HTTP_409_CONFLICT)
+
+
+# check clinic
 class DoctorLogin(APIView):
     serializer_class = DoctorSerializer
 
@@ -124,6 +169,8 @@ class DoctorLogin(APIView):
             response_msg = {'details': 'User exception', 'status': status.HTTP_409_CONFLICT, "exception": inst}
             print(response_msg)
             return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+
+
 
 
 # Headquarters list by enterprise.

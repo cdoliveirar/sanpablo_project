@@ -4,6 +4,7 @@ from .models import (Patient,
                      Enterprise,
                      MedicalHistory,
                      ArtifactMeasurement,
+                     Competition
                      )
 
 
@@ -76,6 +77,15 @@ class PatientUpdatingSerializer(serializers.ModelSerializer):
         for medical_history in patients_medical_histories:
             MedicalHistory.objects.create(patient=patient, **medical_history)
         return patient
+
+
+class CompetitionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Competition
+        fields = '__all__'
+        #fields = ('id', 'patient', 'doctor', 'qualification', 'qualification_feedback', 'recommendation',
+        #              'recommendation_feedback')
+
 
 
 

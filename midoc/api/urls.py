@@ -31,12 +31,17 @@ from .views import (PatientRegisterView,
                     MedicalHistoryListByEmergDoctor,
                     MedicalHistoryUpdating,
                     DoctorListView,
+                    DoctorUpdateAttention,
+                    CompetitionView,
                     )
 
 urlpatterns = [
     # sanpablo
     url(r'^patientregister/$', PatientRegisterView.as_view(), name='patient_register'),
     url(r'^doctor_list/$', DoctorListView.as_view(), name='patient_register'),
+    url(r'^doctor_update_attention/(?P<pk>[0-9]+)/$', DoctorUpdateAttention.as_view(), name='patient'),
+    url(r'^competition/$',CompetitionView.as_view()),
+
 
 
 
