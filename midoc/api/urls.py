@@ -43,9 +43,9 @@ urlpatterns = [
     url(r'^competition/$',CompetitionView.as_view()),
 
 
-
-
     url(r'^doctorlogin/$', DoctorLogin.as_view(), name='doctorlogin'),
+
+
     url(r'^headquarters/(?P<enterprise_id>\d+)/$', EnterpriseHeadquarters.as_view(), name='headquarters'),
 
     url(r'^enterprise/$', ClinicsList.as_view(), name='enterprise'),
