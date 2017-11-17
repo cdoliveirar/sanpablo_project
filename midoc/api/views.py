@@ -66,7 +66,7 @@ class DoctorListView(APIView):
     serializer_class = DoctorSerializer
 
     def get(self, request, format=None):
-        doctor = Doctor.objects.all()
+        doctor = Doctor.objects.all().order_by('call_activate')
         serializer = DoctorSerializer(doctor, many=True)
         clinics = {"asesores": serializer.data}
         return Response(clinics)
