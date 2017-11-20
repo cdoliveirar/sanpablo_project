@@ -158,7 +158,8 @@ class DoctorLogin(APIView):
                      "year_of_birth": doctor.year_of_birth, "picture_url": doctor.picture_url, "location_id":doctor.location_id,
                      "email": doctor.email, "midoc_user": doctor.midoc_user, "password": doctor.password,
                      "type_of_specialist": doctor.type_of_specialist, "is_enabled":doctor.is_enabled,
-                     "picture_url_enterprise": location.enterprise.picture_url_enterprise, "ticket":ticket  }
+                     "picture_url_enterprise": location.enterprise.picture_url_enterprise, "ticket":ticket,
+                     "call_activate":doctor.call_activate}
                 print(d)
                 return Response(d)
                 #return HttpResponse(json.dumps(d, cls=DjangoJSONEncoder), content_type='application/json')
@@ -567,14 +568,16 @@ class PatientByTokenList(APIView):
             patient_list = Patient.objects.filter(token_sinch__exact=token_sinch)
             print(patient_list)
 
-            patient_dict =[ {"id": patient.pk, "name": patient.name, "age": calculate_age(patient.year_of_birth), "email": patient.email,
-                     "password": patient.password, "dni": patient.dni, "picture_url": patient.picture_url,
-                     "blood_type": patient.blood_type, "allergic_reaction": patient.allergic_reaction,
-                     "token_sinch":patient.token_sinch, "size": patient.size, "gender": patient.gender,
-                     "contact_phone": patient.contact_phone, "is_enterprise_enabled": patient.is_enterprise_enabled,
-                     "enterprise_name": patient.location.enterprise.business_name
-                     } for patient in patient_list
-            ]
+            patient_dict = [{"id": patient.pk, "name": patient.name, "age": calculate_age(patient.year_of_birth),
+                             "email": patient.email, "password": patient.password, "dni": patient.dni,
+                             "picture_url": patient.picture_url,
+                             "blood_type": patient.blood_type, "allergic_reaction": patient.allergic_reaction,
+                             "token_sinch": patient.token_sinch,
+                             "size": patient.size, "gender": patient.gender, "contact_phone": patient.contact_phone,
+                             "is_enterprise_enabled": patient.is_enterprise_enabled
+                             # "enterprise_name": patient.location.enterprise.en
+                             } for patient in patient_list
+                            ]
 
             return Response(patient_dict)
         else:
