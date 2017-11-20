@@ -45,6 +45,11 @@ urlpatterns = [
 
     url(r'^doctorlogin/$', DoctorLogin.as_view(), name='doctorlogin'),
 
+    #
+    url(r'^patient_update_token/(?P<pk>[0-9]+)/$', PatientUpdateToken.as_view(), name='patient'),
+    url(r'^patient_token/(?P<token_sinch>[\w\-]+)/$', PatientByTokenList.as_view(), name='patient'),
+
+
 
     url(r'^headquarters/(?P<enterprise_id>\d+)/$', EnterpriseHeadquarters.as_view(), name='headquarters'),
 
@@ -78,9 +83,6 @@ urlpatterns = [
     # patient
     url(r'^patient_verify/$', PatientView.as_view(), name='patient_verify'),
     url(r'^patient_register/$', PatientRegisterView.as_view(), name='patient_register'),
-
-    url(r'^patient_update_token/(?P<pk>[0-9]+)/$', PatientUpdateToken.as_view(), name='patient'),
-    url(r'^patient_token/(?P<token_sinch>[\w\-]+)/$', PatientByTokenList.as_view(), name='patient'),
 
 
     #  update doctor headquarters

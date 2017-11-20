@@ -144,4 +144,56 @@ class CompetitionSerializer(serializers.ModelSerializer):
 
 
 
+class MedicalHistorySerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = MedicalHistory
+        fields = ('id','symptom','doctor_comment','diagnostic')
+
+
+
+class PatientSerializer2(serializers.ModelSerializer):
+    medical_history = MedicalHistorySerializer2(many=True)
+
+    class Meta:
+        model = Patient
+        fields = ('id','name','year_of_birth','email','midoc_user','password','dni','picture_url','blood_type',
+                  'allergic_reaction', 'token_sinch', 'size', 'contact_phone', 'gender', 'created_date')
+
+    def create(self, validated_data):
+        patients_medical_histories = validated_data.pop('patients_medical_histories')
+        patient = Patient.objects.create(**validated_data)
+        for medical_history in patients_medical_histories:
+            MedicalHistory.objects.create(patient=patient, **medical_history)
+        return patient
+
+
+    def update(self, instance, validated_data):
+        medical_histories_data = validated_data.pop('patients_medical_histories')
+        medical_histories = (instance.patients_medical_histories).all()
+        medical_histories = list(medical_histories)
+        validated_data.get()
+
+
+
+
+
+
+    def update(self, instance, validated_data):
+        albums_data = validated_data.pop('album_musician')
+        albums = (instance.album_musician).all()
+        albums = list(albums)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.instrument = validated_data.get('instrument', instance.instrument)
+        instance.save()
+
+        for album_data in albums_data:
+            album = albums.pop(0)
+            album.name = album_data.get('name', album.name)
+            album.release_date = album_data.get('release_date', album.release_date)
+            album.num_stars = album_data.get('num_stars', album.num_stars)
+            album.save()
+        return instance
+
+
 

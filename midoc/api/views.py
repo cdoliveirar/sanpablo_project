@@ -177,6 +177,60 @@ class DoctorLogin(APIView):
             return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
 
 
+# ckeck clinic
+class PatientUpdateToken(APIView):
+    """
+    Retrieve, update a Patient instance.
+    """
+
+    def get_object(self, pk):
+        try:
+            return Patient.objects.get(pk=pk)
+        except Patient.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        patient = self.get_object(pk)
+        serializer = PatientSerializer(patient)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        patient = self.get_object(pk)
+        serializer = PatientSerializer(patient, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+# check token clinic
+class PatientByTokenList(APIView):
+    # renderer_classes = (JSONRenderer,)
+    def get(request, *args, **kwargs):
+        token_sinch = kwargs['token_sinch']
+        print(token_sinch)
+        is_token_sinch = Patient.objects.filter(token_sinch__exact=token_sinch).exists()
+        print(is_token_sinch)
+        if is_token_sinch:
+            patient_list = Patient.objects.filter(token_sinch__exact=token_sinch)
+            print(patient_list)
+            patient_dict = [{"id": patient.pk, "name": patient.name, "age": calculate_age(patient.year_of_birth),
+                             "email": patient.email, "password": patient.password, "dni": patient.dni,
+                             "picture_url": patient.picture_url,
+                             "blood_type": patient.blood_type, "allergic_reaction": patient.allergic_reaction,
+                             "token_sinch": patient.token_sinch,
+                             "size": patient.size, "gender": patient.gender, "contact_phone": patient.contact_phone,
+                             "is_enterprise_enabled": patient.is_enterprise_enabled
+                             # "enterprise_name": patient.location.enterprise.en
+                             } for patient in patient_list
+                            ]
+            return Response(patient_dict)
+        else:
+            response_msg = [{'warning': 'This token not exist:%s' % token_sinch}]
+            return Response(response_msg)
+
+
 
 
 # Headquarters list by enterprise.
@@ -527,62 +581,6 @@ class PatientView(APIView):
 #             return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
 
 
-# ckeck
-class PatientUpdateToken(APIView):
-
-    """
-    Retrieve, update a Patient instance.
-    """
-    def get_object(self, pk):
-        try:
-            return Patient.objects.get(pk=pk)
-        except Patient.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk, format=None):
-        patient = self.get_object(pk)
-        serializer = PatientSerializer(patient)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        patient = self.get_object(pk)
-        serializer = PatientSerializer(patient, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# check - TOKEN
-class PatientByTokenList(APIView):
-
-    #renderer_classes = (JSONRenderer,)
-
-    def get(request, *args, **kwargs):
-        token_sinch = kwargs['token_sinch']
-        print(token_sinch)
-
-        is_token_sinch = Patient.objects.filter(token_sinch__exact=token_sinch).exists()
-        print(is_token_sinch)
-        if is_token_sinch:
-            patient_list = Patient.objects.filter(token_sinch__exact=token_sinch)
-            print(patient_list)
-
-            patient_dict = [{"id": patient.pk, "name": patient.name, "age": calculate_age(patient.year_of_birth),
-                             "email": patient.email, "password": patient.password, "dni": patient.dni,
-                             "picture_url": patient.picture_url,
-                             "blood_type": patient.blood_type, "allergic_reaction": patient.allergic_reaction,
-                             "token_sinch": patient.token_sinch,
-                             "size": patient.size, "gender": patient.gender, "contact_phone": patient.contact_phone,
-                             "is_enterprise_enabled": patient.is_enterprise_enabled
-                             # "enterprise_name": patient.location.enterprise.en
-                             } for patient in patient_list
-                            ]
-
-            return Response(patient_dict)
-        else:
-            response_msg = [{'warning': 'This token not exist:%s' % token_sinch}]
-            return Response(response_msg)
 
 
 # developer status
