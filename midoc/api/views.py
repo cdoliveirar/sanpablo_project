@@ -3,6 +3,7 @@ import sys
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, Http404
 from django.db import transaction
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,6 +19,8 @@ from .serializers import (DoctorSerializer,
                         #PatientHistorySerializer
                         PatientUpdatingSerializer,
                         CompetitionSerializer,
+                        PatientSerializer2,
+                        MedicalHistorySerializer2,
                           )
 from .models import (Doctor,
                     Location,
@@ -230,6 +233,32 @@ class PatientByTokenList(APIView):
             response_msg = [{'warning': 'This token not exist:%s' % token_sinch}]
             return Response(response_msg)
 
+
+#check nested clinic medical history
+# dev child json update/create
+class PatientMedicalHistory(APIView):
+
+    serializer_class = PatientSerializer2
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        #vd = serializer.validated_data
+
+        return Response("Fisnish POST response")
+
+    def put(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        patient_id = request.data['id']
+        print(patient_id)
+        patient = Patient.objects.get(pk=patient_id)
+        serializer.update(patient, request.data)
+
+        # vd = serializer.validated_data
+
+        return Response("Fisnish PUT response")
 
 
 

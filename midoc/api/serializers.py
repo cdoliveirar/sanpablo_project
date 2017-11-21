@@ -4,7 +4,7 @@ from .models import (Patient,
                      Enterprise,
                      MedicalHistory,
                      ArtifactMeasurement,
-                     Competition
+                     Competition,
                      )
 
 
@@ -139,10 +139,7 @@ class CompetitionSerializer(serializers.ModelSerializer):
 #         }
 #     ]
 # }
-
 # --
-
-
 
 class MedicalHistorySerializer2(serializers.ModelSerializer):
     class Meta:
@@ -150,14 +147,14 @@ class MedicalHistorySerializer2(serializers.ModelSerializer):
         fields = ('id','symptom','doctor_comment','diagnostic')
 
 
-
 class PatientSerializer2(serializers.ModelSerializer):
-    medical_history = MedicalHistorySerializer2(many=True)
+    patients_medical_histories = MedicalHistorySerializer2(many=True)
 
     class Meta:
         model = Patient
-        fields = ('id','name','year_of_birth','email','midoc_user','password','dni','picture_url','blood_type',
-                  'allergic_reaction', 'token_sinch', 'size', 'contact_phone', 'gender', 'created_date')
+        fields = ('id', 'name', 'year_of_birth', 'email', 'midoc_user', 'password', 'dni', 'picture_url', 'blood_type',
+                  'allergic_reaction', 'token_sinch', 'size', 'contact_phone', 'gender', 'created_date',
+                  'patients_medical_histories')
 
     def create(self, validated_data):
         patients_medical_histories = validated_data.pop('patients_medical_histories')
@@ -166,34 +163,54 @@ class PatientSerializer2(serializers.ModelSerializer):
             MedicalHistory.objects.create(patient=patient, **medical_history)
         return patient
 
-
     def update(self, instance, validated_data):
-        medical_histories_data = validated_data.pop('patients_medical_histories')
-        medical_histories = (instance.patients_medical_histories).all()
-        medical_histories = list(medical_histories)
-        validated_data.get()
+        try:
+            medical_histories_data = validated_data.pop('patients_medical_histories')
+            medical_histories = (instance.patients_medical_histories).all()
+            medical_histories = list(medical_histories)
+            # validated_data.get()
+
+            instance.name = validated_data.get('name', instance.name)
+            instance.year_of_birth = validated_data.get('year_of_birth', instance.year_of_birth)
+            instance.email = validated_data.get('email', instance.email)
+            instance.midoc_user = validated_data.get('midoc_user', instance.midoc_user)
+            instance.password = validated_data.get('password', instance.password)
+            instance.dni = validated_data.get('dni', instance.dni)
+            instance.picture_url = validated_data.get('picture_url', instance.picture_url)
+            instance.blood_type = validated_data.get('blood_type', instance.blood_type)
+            instance.allergic_reaction = validated_data.get('allergic_reaction', instance.allergic_reaction)
+            instance.token_sinch = validated_data.get('token_sinch', instance.token_sinch)
+            instance.size = validated_data.get('size', instance.size)
+            instance.contact_phone = validated_data.get('contact_phone', instance.contact_phone)
+            instance.gender = validated_data.get('gender', instance.gender)
+            instance.background = validated_data.get('background', instance.background)
+            instance.created_date = validated_data.get('created_date', instance.created_date)
+            instance.save()
 
 
+            #if medical_histories:
+            for medical_history_data in medical_histories_data:
+                #mh = medical_histories.pop(0)
+                mh_id = medical_history_data.get('id', None)
+                if mh_id:
+                    mh = MedicalHistory.objects.get(id=mh_id, patient=instance)
+                    mh.medical_history_text = medical_history_data.get('medical_history_text', mh.medical_history_text)
+                    mh.symptom = medical_history_data.get('symptom', mh.symptom)
+                    mh.doctor_comment = medical_history_data.get('doctor_comment', mh.doctor_comment)
+                    mh.diagnostic = medical_history_data.get('diagnostic', mh.diagnostic)
+                    mh.weight = medical_history_data.get('weight', mh.weight)
+                    mh.body_temperature = medical_history_data.get('body_temperature', mh.body_temperature)
+                    mh.blood_pressure = medical_history_data.get('blood_pressure', mh.blood_pressure)
+                    mh.heart_rate = medical_history_data.get('heart_rate', mh.heart_rate)
+                    mh.save()
+                else:
+                    print("creando nuevo MH")
+                    MedicalHistory.objects.create(patient=instance, **medical_history_data)
+            return instance
 
+        except Exception as inst:
+            print(inst)
 
-
-
-    def update(self, instance, validated_data):
-        albums_data = validated_data.pop('album_musician')
-        albums = (instance.album_musician).all()
-        albums = list(albums)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.instrument = validated_data.get('instrument', instance.instrument)
-        instance.save()
-
-        for album_data in albums_data:
-            album = albums.pop(0)
-            album.name = album_data.get('name', album.name)
-            album.release_date = album_data.get('release_date', album.release_date)
-            album.num_stars = album_data.get('num_stars', album.num_stars)
-            album.save()
-        return instance
 
 
 

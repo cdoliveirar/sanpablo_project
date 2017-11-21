@@ -190,6 +190,7 @@ class Patient(models.Model):
     contact_phone = models.CharField(max_length=20, blank=True, null=True)
     gender = models.CharField(max_length=1, blank=True, null=True)
     is_enterprise_enabled = models.NullBooleanField()
+    background = models.TextField(blank=True, null=True)
     created_date = models.DateTimeField(blank=True, null=True)
     created_by = models.TextField(blank=True, null=True)
     last_modified_date = models.DateTimeField(blank=True, null=True)
