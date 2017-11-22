@@ -206,7 +206,6 @@ class PatientUpdateToken(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 # check token clinic
 class PatientByTokenList(APIView):
     # renderer_classes = (JSONRenderer,)
@@ -234,7 +233,7 @@ class PatientByTokenList(APIView):
             return Response(response_msg)
 
 
-#check nested clinic medical history
+# check clinic nested clinic medical history
 # dev child json update/create
 class PatientMedicalHistory(APIView):
 
@@ -259,6 +258,32 @@ class PatientMedicalHistory(APIView):
         # vd = serializer.validated_data
 
         return Response("Fisnish PUT response")
+
+
+# clinic Doctor Attention
+# select * from patient where id in (
+#select DISTINCT(patient_id) from medical_history where doctor_id = 1);
+class DoctorAttentionPatient(APIView):
+
+    def get(self, request, *args, **kwargs):
+        doctor_id = kwargs["doctor_id"]
+        if doctor_id:
+            mhs = MedicalHistory.objects.filter(doctor_id=doctor_id).values_list('patient_id', flat=True).distinct('patient_id')
+            patient_list=[]
+            for mh in mhs:
+                patient = Patient.objects.get(pk=mh)
+                patient_list.append(patient)
+                #print(patient_list)
+            patient_dict2 = [{"id": patient.pk, "name": patient.name, "age": calculate_age(patient.year_of_birth),
+                             "email": patient.email, "password": patient.password, "dni": patient.dni,
+                             "picture_url": patient.picture_url,
+                             "blood_type": patient.blood_type, "allergic_reaction": patient.allergic_reaction,
+                             "token_sinch": patient.token_sinch,
+                             "size": patient.size, "gender": patient.gender, "contact_phone": patient.contact_phone,
+                             "is_enterprise_enabled": patient.is_enterprise_enabled
+                             } for patient in patient_list]
+            return Response(patient_dict2)
+
 
 
 

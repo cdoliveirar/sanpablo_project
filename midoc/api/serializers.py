@@ -144,7 +144,8 @@ class CompetitionSerializer(serializers.ModelSerializer):
 class MedicalHistorySerializer2(serializers.ModelSerializer):
     class Meta:
         model = MedicalHistory
-        fields = ('id','symptom','doctor_comment','diagnostic')
+        fields = ('id','doctor_id','medical_history_text','symptom','doctor_comment','diagnostic', 'weight',
+                  'body_temperature', 'blood_pressure', 'heart_rate')
 
 
 class PatientSerializer2(serializers.ModelSerializer):
@@ -194,6 +195,7 @@ class PatientSerializer2(serializers.ModelSerializer):
                 mh_id = medical_history_data.get('id', None)
                 if mh_id:
                     mh = MedicalHistory.objects.get(id=mh_id, patient=instance)
+                    mh.doctor_id = medical_history_data.get('doctor_id', mh.doctor_id)
                     mh.medical_history_text = medical_history_data.get('medical_history_text', mh.medical_history_text)
                     mh.symptom = medical_history_data.get('symptom', mh.symptom)
                     mh.doctor_comment = medical_history_data.get('doctor_comment', mh.doctor_comment)

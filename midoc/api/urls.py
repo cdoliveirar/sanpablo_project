@@ -34,6 +34,7 @@ from .views import (PatientRegisterView,
                     DoctorUpdateAttention,
                     CompetitionView,
                     PatientMedicalHistory,
+                    DoctorAttentionPatient,
                     )
 
 urlpatterns = [
@@ -41,7 +42,7 @@ urlpatterns = [
     url(r'^patientregister/$', PatientRegisterView.as_view(), name='patient_register'),
     url(r'^doctor_list/$', DoctorListView.as_view(), name='patient_register'),
     url(r'^doctor_update_attention/(?P<pk>[0-9]+)/$', DoctorUpdateAttention.as_view(), name='patient'),
-    url(r'^competition/$',CompetitionView.as_view()),
+    url(r'^competition/$', CompetitionView.as_view()),
 
 
     url(r'^doctorlogin/$', DoctorLogin.as_view(), name='doctorlogin'),
@@ -52,6 +53,8 @@ urlpatterns = [
 
     url(r'^patient_medical_history/$', PatientMedicalHistory.as_view(), name='patient_medical_history'),
 
+    ###
+    url(r'^doctor_attention_patient/(?P<doctor_id>\d+)/$', DoctorAttentionPatient.as_view(), name='doctor_attention_patient'),
 
 
 
@@ -86,6 +89,7 @@ urlpatterns = [
 
     # patient
     url(r'^patient_verify/$', PatientView.as_view(), name='patient_verify'),
+
     url(r'^patient_register/$', PatientRegisterView.as_view(), name='patient_register'),
 
 
