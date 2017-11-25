@@ -261,7 +261,7 @@ class PatientMedicalHistory(APIView):
 
         # vd = serializer.validated_data
 
-        response_msg = {'details': 'La historia medica fue actualizada', 'status': status.HTTP_201_CREATED}
+        response_msg = {'details': 'La historia medica fue actualizada', 'status': status.HTTP_200_OK}
         print(response_msg)
         return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
 
