@@ -245,7 +245,11 @@ class PatientMedicalHistory(APIView):
         serializer.save()
         #vd = serializer.validated_data
 
-        return Response("Fisnish POST response")
+        response_msg = {'details': 'La Historia medica fue insertada', 'status': status.HTTP_201_CREATED}
+        print(response_msg)
+        return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+
+        #return Response("Fisnish POST response")
 
     def put(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
@@ -257,7 +261,11 @@ class PatientMedicalHistory(APIView):
 
         # vd = serializer.validated_data
 
-        return Response("Fisnish PUT response")
+        response_msg = {'details': 'La historia medica fue actualizada', 'status': status.HTTP_201_CREATED}
+        print(response_msg)
+        return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+
+        #return Response("Fisnish PUT response")
 
 
 # clinic Doctor Attention
