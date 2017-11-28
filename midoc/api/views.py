@@ -252,18 +252,24 @@ class PatientMedicalHistory(APIView):
         #return Response("Fisnish POST response")
 
     def put(self, request, format=None):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        patient_id = request.data['id']
-        print(patient_id)
-        patient = Patient.objects.get(pk=patient_id)
-        serializer.update(patient, request.data)
+        try:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            patient_id = request.data['id']
+            print(patient_id)
+            patient = Patient.objects.get(pk=patient_id)
+            serializer.update(patient, request.data)
 
-        # vd = serializer.validated_data
+            # vd = serializer.validated_data
 
-        response_msg = {'details': 'La historia medica fue actualizada', 'status': status.HTTP_200_OK}
-        print(response_msg)
-        return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+            response_msg = {'details': 'La historia medica fue actualizada', 'status': status.HTTP_200_OK}
+            print(response_msg)
+            return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+        except Exception as inst:
+            print(inst)
+            response_msg = {'details': inst, 'status': status.HTTP_409_CONFLICT}
+            print(response_msg)
+            return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
 
         #return Response("Fisnish PUT response")
 
@@ -292,6 +298,28 @@ class DoctorAttentionPatient(APIView):
                              } for patient in patient_list]
             return Response(patient_dict2)
 
+
+
+# clinic show medical history by patient
+class MedicalHistoryByPatient(APIView):
+
+    def get(self, request, *args, **kwargs):
+        patient_id = kwargs["patient_id"]
+        if patient_id:
+            mhs = MedicalHistory.objects.filter(patient_id= patient_id).order_by('-created_date')
+
+            medical_history = [{"id": mh.pk, "location_id": mh.location_id,
+                              "medical_history_text": mh.medical_history_text, "symptom": mh.symptom,
+                              "doctor_comment":mh.doctor_comment, "diagnostic":mh.diagnostic, "weight":mh.weight,
+                              "body_temperature":mh.body_temperature, "blood_pressure": mh.blood_pressure,
+                              "heart_rate":mh.heart_rate, "next_medical_date": mh.next_medical_date,
+                              "created_date": mh.created_date}  for mh in mhs]
+            medical_history_list = {"medical_history": medical_history}
+            return Response(medical_history_list)
+        else:
+            response_msg = {"details": "Este Patiente no existe o no fue aun registrado", "status": status.HTTP_409_CONFLICT}
+            print(response_msg)
+            return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
 
 
 

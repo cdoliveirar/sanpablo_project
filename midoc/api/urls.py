@@ -35,6 +35,7 @@ from .views import (PatientRegisterView,
                     CompetitionView,
                     PatientMedicalHistory,
                     DoctorAttentionPatient,
+                    MedicalHistoryByPatient
                     )
 
 urlpatterns = [
@@ -53,8 +54,12 @@ urlpatterns = [
 
     url(r'^patient_medical_history/$', PatientMedicalHistory.as_view(), name='patient_medical_history'),
 
-    ###
+
     url(r'^doctor_attention_patient/(?P<doctor_id>\d+)/$', DoctorAttentionPatient.as_view(), name='doctor_attention_patient'),
+
+    url(r'^medical_history_by_patient/(?P<patient_id>\d+)/$', MedicalHistoryByPatient.as_view(), name='doctor_attention_patient'),
+
+    ###
 
 
 
