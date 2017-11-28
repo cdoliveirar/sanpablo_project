@@ -20,9 +20,9 @@ class Doctor(models.Model):
     type_of_specialist = models.CharField(max_length=100, blank=True, null=True)
     call_activate = models.CharField(max_length=1, blank=True, null=True)
     is_enabled = models.NullBooleanField()
-    created_date = models.DateTimeField(blank=True, null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
     created_by = models.TextField(blank=True, null=True)
-    last_modified_date = models.DateTimeField(blank=True, null=True)
+    last_modified_date = models.DateTimeField(auto_now=True)
     last_modified_by = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -145,9 +145,10 @@ class MedicalHistory(models.Model):
     blood_pressure = models.CharField(max_length=10, blank=True, null=True)
     heart_rate = models.CharField(max_length=10, blank=True, null=True)
     next_medical_date = models.DateTimeField(blank=True, null=True, default=timezone.now)
-    created_date = models.DateTimeField(blank=True, null=True, default=timezone.now)
+    #created_date = models.DateTimeField(blank=True, null=True, default=timezone.now)
+    created_date = models.DateTimeField(auto_now_add=True)
     created_by = models.TextField(blank=True, null=True)
-    last_modified_date = models.DateTimeField(blank=True, null=True)
+    last_modified_date = models.DateTimeField(auto_now=True)
     last_modified_by = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -191,9 +192,9 @@ class Patient(models.Model):
     gender = models.CharField(max_length=1, blank=True, null=True)
     is_enterprise_enabled = models.NullBooleanField()
     background = models.TextField(blank=True, null=True)
-    created_date = models.DateTimeField(blank=True, null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
     created_by = models.TextField(blank=True, null=True)
-    last_modified_date = models.DateTimeField(blank=True, null=True)
+    last_modified_date = models.DateTimeField(auto_now=True)
     last_modified_by = models.TextField(blank=True, null=True)
 
     def __str__(self):

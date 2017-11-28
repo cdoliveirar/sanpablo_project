@@ -276,8 +276,8 @@ class PatientMedicalHistory(APIView):
 
 # clinic Doctor Attention
 # select * from patient where id in (
-#select DISTINCT(patient_id) from medical_history where doctor_id = 1);
-class DoctorAttentionPatient(APIView):
+# select DISTINCT(patient_id) from medical_history where doctor_id = 1);
+class DoctorAttentionPatient2(APIView):
 
     def get(self, request, *args, **kwargs):
         doctor_id = kwargs["doctor_id"]
@@ -300,27 +300,50 @@ class DoctorAttentionPatient(APIView):
 
 
 
-# clinic show medical history by patient
-class MedicalHistoryByPatient(APIView):
+class DoctorAttentionPatient(APIView):
 
+    def get(self, request, *args, **kwargs):
+        doctor_id = kwargs["doctor_id"]
+        if doctor_id:
+            mhs = MedicalHistory.objects.filter(doctor_id=doctor_id).order_by('-created_date')
+            print(mhs.count())
+            patient_list = []
+            for mh in mhs:
+                patient = Patient.objects.get(pk=mh.patient.pk)
+                patient_list.append(patient)
+                # print(patient_list)
+            patient_dict2 = [
+                {"id": patient.pk, "name": patient.name, "age": calculate_age(patient.year_of_birth),
+                 "email": patient.email, "password": patient.password, "dni": patient.dni,
+                 "picture_url": patient.picture_url,
+                 "blood_type": patient.blood_type, "allergic_reaction": patient.allergic_reaction,
+                 "token_sinch": patient.token_sinch,
+                 "size": patient.size, "gender": patient.gender, "contact_phone": patient.contact_phone,
+                 "is_enterprise_enabled": patient.is_enterprise_enabled, "created_date": patient.created_date
+                 } for patient in patient_list]
+            return Response(patient_dict2)
+
+
+# clinic
+class MedicalHistoryByPatient(APIView):
     def get(self, request, *args, **kwargs):
         patient_id = kwargs["patient_id"]
         if patient_id:
-            mhs = MedicalHistory.objects.filter(patient_id= patient_id).order_by('-created_date')
-
+            mhs = MedicalHistory.objects.filter(patient_id=patient_id).order_by('-created_date')
             medical_history = [{"id": mh.pk, "location_id": mh.location_id,
-                              "medical_history_text": mh.medical_history_text, "symptom": mh.symptom,
-                              "doctor_comment":mh.doctor_comment, "diagnostic":mh.diagnostic, "weight":mh.weight,
-                              "body_temperature":mh.body_temperature, "blood_pressure": mh.blood_pressure,
-                              "heart_rate":mh.heart_rate, "next_medical_date": mh.next_medical_date,
-                              "created_date": mh.created_date}  for mh in mhs]
+                                "medical_history_text": mh.medical_history_text, "symptom": mh.symptom,
+                                "doctor_comment": mh.doctor_comment, "diagnostic": mh.diagnostic,
+                                "weight": mh.weight,
+                                "body_temperature": mh.body_temperature, "blood_pressure": mh.blood_pressure,
+                                "heart_rate": mh.heart_rate, "next_medical_date": mh.next_medical_date,
+                                "created_date": mh.created_date} for mh in mhs]
             medical_history_list = {"medical_history": medical_history}
             return Response(medical_history_list)
         else:
-            response_msg = {"details": "Este Patiente no existe o no fue aun registrado", "status": status.HTTP_409_CONFLICT}
+            response_msg = {"details": "Este Patiente no existe o no fue aun registrado",
+                            "status": status.HTTP_409_CONFLICT}
             print(response_msg)
             return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
-
 
 
 # Headquarters list by enterprise.
