@@ -21,6 +21,7 @@ from .serializers import (DoctorSerializer,
                         CompetitionSerializer,
                         PatientSerializer2,
                         MedicalHistorySerializer2,
+                        VoucherSerializer,
                           )
 from .models import (Doctor,
                     Location,
@@ -33,6 +34,7 @@ from .models import (Doctor,
                     Appointment,
                     ArtifactMeasurement,
                     Competition,
+                    Voucher,
                     )
 
 
@@ -344,6 +346,78 @@ class MedicalHistoryByPatient(APIView):
                             "status": status.HTTP_409_CONFLICT}
             print(response_msg)
             return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+
+
+# clinic
+class BusinessActivationCode(APIView):
+    #serializer_class = VoucherSerializer
+
+    """
+    Retrieve, update a Voucher instance.
+    """
+
+    def get_object(self, code):
+        try:
+            return Voucher.objects.get(code=code)
+        except Voucher.DoesNotExist:
+            raise Http404
+
+    def get(self, request, code, format=None):
+        voucher = self.get_object(code)
+        serializer = VoucherSerializer(voucher)
+        return Response(serializer.data)
+
+    # def put(self, request, coupon, format=None):
+    #     voucher = self.get_object(coupon)
+    #     serializer = VoucherSerializer(voucher, data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request,  *args, **kwargs):
+        serializer = VoucherSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        vd = serializer.validated_data
+        print(vd.get("state"))
+        print(vd.get("code"))
+        try:
+            if Voucher.objects.filter(code__iexact=vd.get('code')).exists():
+                # recovery the patient
+                voucher = Voucher.objects.get(code__exact=vd.get('code'))
+                if voucher.state == "1":
+                    response_msg = {'details': 'El codigo esta siendo usado, por favor intenta con un nuevo codigo',
+                                    'status': status.HTTP_404_NOT_FOUND}
+                    return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+                else:
+                    voucher.state = "1"
+                    voucher.save()
+
+                # p = {"id": patient.pk, "name": patient.name, "email": patient.email,
+                #      "password": patient.password, "dni": patient.dni, "picture_url": patient.picture_url,
+                #      "enterprise_enabled": patient.is_enterprise_enabled, "blood_type": patient.blood_type,
+                #      "allergic_reaction": patient.allergic_reaction, "token_sinch": patient.token_sinch,
+                #      "size": patient.size
+                # }
+
+                v = {"id": voucher.pk, "name": voucher.name, "code": voucher.code, "usage": voucher.usage,
+                     "state": voucher.state
+                }
+
+                return Response(v)
+            else:
+                response_msg = {'details': 'El voucher no existe', 'status': status.HTTP_404_NOT_FOUND}
+                return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+
+        except Exception as inst:
+            print(">>> create failure")
+            print(inst)
+            response_msg = [{'create': 'failure'}]
+            return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+
+
+# end clinic API
+# ==============
 
 
 # Headquarters list by enterprise.

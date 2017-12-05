@@ -101,6 +101,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5,
 }
 
+if not DEBUG:
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (
+        'rest_framework.renderers.JSONRenderer',
+    )
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases

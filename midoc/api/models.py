@@ -259,3 +259,48 @@ class Competition(models.Model):
     class Meta:
         managed = False
         db_table = 'competition'
+
+
+class Voucher(models.Model):
+    voucher_type = models.ForeignKey('VoucherType', models.DO_NOTHING, blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    code = models.CharField(max_length=128, blank=True, null=True)
+    usage = models.CharField(max_length=128, blank=True, null=True)
+    state = models.CharField(max_length=1, blank=True, null=True)
+    start_datetime = models.DateTimeField(blank=True, null=True)
+    end_datetime = models.DateTimeField(blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "{0} - {1}".format(self.name, self.code)
+
+    class Meta:
+        managed = False
+        db_table = 'voucher'
+
+
+class VoucherEnterprise(models.Model):
+    voucher = models.ForeignKey(Voucher, models.DO_NOTHING)
+    enterprise = models.ForeignKey(Enterprise, models.DO_NOTHING)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed = False
+        db_table = 'voucher_enterprise'
+
+
+class VoucherType(models.Model):
+    id = models.CharField(primary_key=True, max_length=80)
+    voucher_type = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    last_modified_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "{0} - {1}".format(self.description, self.id)
+
+    class Meta:
+        managed = False
+        db_table = 'voucher_type'

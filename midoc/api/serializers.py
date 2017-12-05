@@ -5,6 +5,7 @@ from .models import (Patient,
                      MedicalHistory,
                      ArtifactMeasurement,
                      Competition,
+                     Voucher,
                      )
 
 
@@ -210,4 +211,9 @@ class PatientSerializer2(serializers.ModelSerializer):
                 MedicalHistory.objects.create(patient=instance, **medical_history_data)
         return instance
 
+
+class VoucherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Voucher
+        fields = '__all__'
 

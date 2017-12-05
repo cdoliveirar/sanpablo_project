@@ -35,7 +35,8 @@ from .views import (PatientRegisterView,
                     CompetitionView,
                     PatientMedicalHistory,
                     DoctorAttentionPatient,
-                    MedicalHistoryByPatient
+                    MedicalHistoryByPatient,
+                    BusinessActivationCode,
                     )
 
 urlpatterns = [
@@ -58,6 +59,13 @@ urlpatterns = [
     url(r'^doctor_attention_patient/(?P<doctor_id>\d+)/$', DoctorAttentionPatient.as_view(), name='doctor_attention_patient'),
 
     url(r'^medical_history_by_patient/(?P<patient_id>\d+)/$', MedicalHistoryByPatient.as_view(), name='doctor_attention_patient'),
+
+    # 3 voucher
+    url(r'^business_activation_code/(?P<code>[\w\-]+)/$', BusinessActivationCode.as_view(), name='business_activation_code'),
+
+
+
+
 
     ###
 
