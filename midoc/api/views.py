@@ -400,6 +400,8 @@ class BusinessActivationCode(APIView):
                 elif voucher.state == '1' and voucher.device_id != vd.get("device_id"):
                     response_msg = {'details': 'El código esta siendo usado, por favor intenta con un nuevo código',
                                     'status': status.HTTP_404_NOT_FOUND}
+                    return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder),
+                                        content_type='application/json')
                 elif voucher.state == '2':
                     response_msg = {'details': 'Este código ya expiró', 'status': status.HTTP_404_NOT_FOUND}
                     return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder),
