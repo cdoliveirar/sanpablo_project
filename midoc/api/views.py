@@ -382,21 +382,28 @@ class BusinessActivationCode(APIView):
         code = kwargs["code"]
         print(code)
         print(vd.get("state"))
+        print(vd.get("device_id"))
         try:
             if Voucher.objects.filter(code__iexact=code).exists():
                 # recovery the patient
                 voucher = Voucher.objects.get(code__exact=code)
-                if voucher.state == '1':
+                if voucher.state == '0':
+                    voucher.state = '1'
+                    voucher.device_id = vd.get("device_id")
+                    voucher.save()
+
+                elif voucher.state == '1' and voucher.device_id == vd.get("device_id"):
+                    response_msg = {'details': 'Bienvenido de vuelta',
+                                    'status': status.HTTP_200_OK}
+                    return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder),
+                                        content_type='application/json')
+                elif voucher.state == '1' and voucher.device_id != vd.get("device_id"):
                     response_msg = {'details': 'El código esta siendo usado, por favor intenta con un nuevo código',
                                     'status': status.HTTP_404_NOT_FOUND}
-                    return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
                 elif voucher.state == '2':
                     response_msg = {'details': 'Este código ya expiró', 'status': status.HTTP_404_NOT_FOUND}
                     return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder),
                                         content_type='application/json')
-                else:
-                    voucher.state = vd.get("state")
-                    voucher.save()
 
                 # p = {"id": patient.pk, "name": patient.name, "email": patient.email,
                 #      "password": patient.password, "dni": patient.dni, "picture_url": patient.picture_url,
@@ -406,7 +413,7 @@ class BusinessActivationCode(APIView):
                 # }
 
                 v = {"id": voucher.pk, "name": voucher.name, "code": voucher.code, "usage": voucher.usage,
-                     "state": voucher.state
+                     "state": voucher.state, "device_id":voucher.device_id
                 }
 
                 return Response(v)

@@ -267,6 +267,7 @@ class Voucher(models.Model):
     code = models.CharField(max_length=128, blank=True, null=True)
     usage = models.CharField(max_length=128, blank=True, null=True)
     state = models.CharField(max_length=1, blank=True, null=True)
+    device_id = models.TextField(blank=True, null=True)
     start_datetime = models.DateTimeField(blank=True, null=True)
     end_datetime = models.DateTimeField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
