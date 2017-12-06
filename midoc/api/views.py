@@ -379,18 +379,23 @@ class BusinessActivationCode(APIView):
         serializer = VoucherSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         vd = serializer.validated_data
+        code = kwargs["code"]
+        print(code)
         print(vd.get("state"))
-        print(vd.get("code"))
         try:
-            if Voucher.objects.filter(code__iexact=vd.get('code')).exists():
+            if Voucher.objects.filter(code__iexact=code).exists():
                 # recovery the patient
-                voucher = Voucher.objects.get(code__exact=vd.get('code'))
-                if voucher.state == "1":
+                voucher = Voucher.objects.get(code__exact=code)
+                if voucher.state == '1':
                     response_msg = {'details': 'El codigo esta siendo usado, por favor intenta con un nuevo codigo',
                                     'status': status.HTTP_404_NOT_FOUND}
                     return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder), content_type='application/json')
+                elif voucher.state == '2':
+                    response_msg = {'details': 'Este codigo ya expiro', 'status': status.HTTP_404_NOT_FOUND}
+                    return HttpResponse(json.dumps(response_msg, cls=DjangoJSONEncoder),
+                                        content_type='application/json')
                 else:
-                    voucher.state = "1"
+                    voucher.state = vd.get("state")
                     voucher.save()
 
                 # p = {"id": patient.pk, "name": patient.name, "email": patient.email,
