@@ -1,0 +1,8 @@
+Django==1.11.6
+Markdown==2.6.8
+django-cors-headers==2.1.0
+django-filter==1.0.4
+djangorestframework==3.7.3
+gunicorn==19.7.1
+psycopg2==2.7.1
+pytz==2017.2

@@ -65,10 +65,10 @@ urlpatterns = [
 
 
 
-
+    ### temporal working payments
+    url(r'^business_activation_code/(?P<code>[\w\-]+)/$', BusinessActivationCode.as_view(), name='business_activation_code'),
 
     ###
-
 
 
     url(r'^headquarters/(?P<enterprise_id>\d+)/$', EnterpriseHeadquarters.as_view(), name='headquarters'),
